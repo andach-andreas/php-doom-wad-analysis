@@ -68,16 +68,6 @@ class WadFile
         return null;
     }
 
-    public function getRawLump(string $name): ?array
-    {
-        foreach ($this->lumps as $lump) {
-            if (strcasecmp($lump['name'], $name) === 0) {
-                return $lump;
-            }
-        }
-        return null;
-    }
-
     protected function readBytes(int $offset, int $size): string
     {
         $handle = fopen($this->path, 'rb');
@@ -85,10 +75,5 @@ class WadFile
         $data = fread($handle, $size);
         fclose($handle);
         return $data;
-    }
-
-    public function getLumpNames(): array
-    {
-        return array_map(fn($lump) => $lump['name'], $this->lumps);
     }
 }

@@ -8,14 +8,13 @@ class Colormap
 {
     public static function parse(string $data): array
     {
-        // 34 levels × 256 bytes = 8704 bytes
         $reader = new LumpReader($data);
-        $levels = [];
 
-        for ($i = 0; !$reader->isEOF() && $i < 34; $i++) {
-            $levels[] = array_values(unpack('C*', $reader->readBytes(256)));
-        }
+        // Each level is 256 bytes (one color map)
+        // There are 34 levels total
 
-        return $levels;
+        return $reader->readStructs(256, function (LumpReader $r) {
+            return array_values(unpack('C*', $r->readBytes(256)));
+        });
     }
 }
