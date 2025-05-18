@@ -73,4 +73,20 @@ class Junkfood4ReducedTest extends TestCase
         $this->assertEquals(['r' => 0, 'g' => 0, 'b' => 0], $result['global']['playpal'][0][0]);
         $this->assertEquals(['r' => 26, 'g' => 19, 'b' => 9], $result['global']['playpal'][0][1]);
     }
+
+    public function testCountsInWad()
+    {
+        $analyser = new WadAnalyser([
+            'maps' => [
+                'counts' => true,
+            ],
+        ]);
+        $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
+
+        $this->assertEquals(227, $result['maps']['MAP01']['counts']['things']);
+        $this->assertEquals(2269, $result['maps']['MAP01']['counts']['linedefs']);
+        $this->assertEquals(4410, $result['maps']['MAP01']['counts']['sidedefs']);
+        $this->assertEquals(2336, $result['maps']['MAP01']['counts']['vertexes']);
+        $this->assertEquals(259, $result['maps']['MAP01']['counts']['sectors']);
+    }
 }

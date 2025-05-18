@@ -17,6 +17,7 @@ $settings = [
     'colormap' => true,
     'playpal'  => true,
     'maps' => [
+        'counts'   => true,
         'things'   => true,
         'linedefs' => true,
         'sidedefs' => true,

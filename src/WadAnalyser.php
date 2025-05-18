@@ -113,8 +113,17 @@ class WadAnalyser
             return null;
         };
 
+        if ($this->settings['maps']['counts'] ?? false)
+        {
+            $mapData['counts']['things']   = intdiv(strlen($getLumpData(1)), 10);
+            $mapData['counts']['linedefs'] = intdiv(strlen($getLumpData(2)), 14);
+            $mapData['counts']['sidedefs'] = intdiv(strlen($getLumpData(3)), 30);
+            $mapData['counts']['vertexes'] = intdiv(strlen($getLumpData(4)), 4);
+            $mapData['counts']['sectors']  = intdiv(strlen($getLumpData(8)), 26);
+        }
+
         // THINGS lump: index + 1
-        if ($settings['maps']['things'] ?? false)
+        if ($this->settings['maps']['things'] ?? false)
         {
             $thingsData = $getLumpData(1);
             if ($thingsData !== null) {
@@ -123,7 +132,7 @@ class WadAnalyser
         }
 
         // LINEDEFS lump: index + 2
-        if ($settings['maps']['linedefs'] ?? false)
+        if ($this->settings['maps']['linedefs'] ?? false)
         {
             $linedefsData = $getLumpData(2);
             if ($linedefsData !== null) {
@@ -132,7 +141,7 @@ class WadAnalyser
         }
 
         // SIDEDEFS lump: index + 3
-        if ($settings['maps']['sidedefs'] ?? false)
+        if ($this->settings['maps']['sidedefs'] ?? false)
         {
             $sidedefsData = $getLumpData(3);
             if ($sidedefsData !== null) {
@@ -141,16 +150,16 @@ class WadAnalyser
         }
 
         // VERTEXES lump: index + 4
-        if ($settings['maps']['vertexes'] ?? false) {
+        if ($this->settings['maps']['vertexes'] ?? false) {
             $vertexesData = $getLumpData(4);
             if ($vertexesData !== null) {
                 $mapData['vertexes'] = Vertexes::parse($vertexesData);
             }
         }
 
-        // SECTORS lump: index + 7 (skip 5,6: SEGS and SSECTORS)
-        if ($settings['maps']['sectors'] ?? false) {
-            $sectorsData = $getLumpData(7);
+        // SECTORS lump: index + 8 (skip 5,6,7: SEGS, SSECTORS and NODES)
+        if ($this->settings['maps']['sectors'] ?? false) {
+            $sectorsData = $getLumpData(8);
             if ($sectorsData !== null) {
                 $mapData['sectors'] = Sectors::parse($sectorsData);
             }
