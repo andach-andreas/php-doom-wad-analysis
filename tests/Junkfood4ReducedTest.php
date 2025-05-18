@@ -7,7 +7,17 @@ class Junkfood4ReducedTest extends TestCase
 {
     public function testMapCountInWad()
     {
-        $analyser = new WadAnalyser();
+        $analyser = new WadAnalyser([
+            'colormap' => true,
+            'playpal'  => true,
+            'maps' => [
+                'things'   => true,
+                'linedefs' => true,
+                'sidedefs' => true,
+                'vertexes' => true,
+                'textures' => true,
+            ],
+        ]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
         $this->assertArrayHasKey('maps', $result);
@@ -17,7 +27,17 @@ class Junkfood4ReducedTest extends TestCase
 
     public function testColormapInWad()
     {
-        $analyser = new WadAnalyser();
+        $analyser = new WadAnalyser([
+            'colormap' => true,
+            'playpal'  => true,
+            'maps' => [
+                'things'   => true,
+                'linedefs' => true,
+                'sidedefs' => true,
+                'vertexes' => true,
+                'textures' => true,
+            ],
+        ]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
         $this->assertTrue($result['global']['has_colormap']);
@@ -30,7 +50,17 @@ class Junkfood4ReducedTest extends TestCase
 
     public function testPlaypalInWad()
     {
-        $analyser = new WadAnalyser();
+        $analyser = new WadAnalyser([
+            'colormap' => true,
+            'playpal'  => true,
+            'maps' => [
+                'things'   => true,
+                'linedefs' => true,
+                'sidedefs' => true,
+                'vertexes' => true,
+                'textures' => true,
+            ],
+        ]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
         $this->assertTrue($result['global']['has_playpal']);

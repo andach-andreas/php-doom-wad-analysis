@@ -12,7 +12,13 @@ use Andach\DoomWadAnalysis\Lumps\Map\Things;
 
 class WadAnalyser
 {
+    protected array $settings = [];
     protected WadFile $wadFile;
+
+    public function __construct($settings = [])
+    {
+        $this->settings = $settings;
+    }
 
     public function analyse(string $path): array
     {
@@ -31,16 +37,22 @@ class WadAnalyser
     {
         $globals = [];
 
-        $colormapData = $this->wadFile->getLumpData('COLORMAP');
-        $globals['has_colormap'] = $colormapData !== null;
-        if ($colormapData !== null) {
-            $globals['colormap'] = Colormap::parse($colormapData);
+        if ($this->settings['colormap'] ?? false)
+        {
+            $colormapData = $this->wadFile->getLumpData('COLORMAP');
+            $globals['has_colormap'] = $colormapData !== null;
+            if ($colormapData !== null) {
+                $globals['colormap'] = Colormap::parse($colormapData);
+            }
         }
 
-        $playpalData = $this->wadFile->getLumpData('PLAYPAL');
-        $globals['has_playpal'] = $playpalData !== null;
-        if ($playpalData !== null) {
-            $globals['playpal'] = Playpal::parse($playpalData);
+        if ($this->settings['playpal'] ?? false)
+        {
+            $playpalData = $this->wadFile->getLumpData('PLAYPAL');
+            $globals['has_playpal'] = $playpalData !== null;
+            if ($playpalData !== null) {
+                $globals['playpal'] = Playpal::parse($playpalData);
+            }
         }
 
         // TODO: Detect custom enemies and weapons by scanning lumps or things
@@ -102,33 +114,46 @@ class WadAnalyser
         };
 
         // THINGS lump: index + 1
-        $thingsData = $getLumpData(1);
-        if ($thingsData !== null) {
-            $mapData['things'] = Things::parse($thingsData);
+        if ($settings['maps']['things'] ?? false)
+        {
+            $thingsData = $getLumpData(1);
+            if ($thingsData !== null) {
+                $mapData['things'] = Things::parse($thingsData);
+            }
         }
 
         // LINEDEFS lump: index + 2
-        $linedefsData = $getLumpData(2);
-        if ($linedefsData !== null) {
-            $mapData['linedefs'] = Linedefs::parse($linedefsData);
+        if ($settings['maps']['linedefs'] ?? false)
+        {
+            $linedefsData = $getLumpData(2);
+            if ($linedefsData !== null) {
+                $mapData['linedefs'] = Linedefs::parse($linedefsData);
+            }
         }
 
         // SIDEDEFS lump: index + 3
-        $sidedefsData = $getLumpData(3);
-        if ($sidedefsData !== null) {
-            $mapData['sidedefs'] = Sidedefs::parse($sidedefsData);
+        if ($settings['maps']['sidedefs'] ?? false)
+        {
+            $sidedefsData = $getLumpData(3);
+            if ($sidedefsData !== null) {
+                $mapData['sidedefs'] = Sidedefs::parse($sidedefsData);
+            }
         }
 
         // VERTEXES lump: index + 4
-        $vertexesData = $getLumpData(4);
-        if ($vertexesData !== null) {
-            $mapData['vertexes'] = Vertexes::parse($vertexesData);
+        if ($settings['maps']['vertexes'] ?? false) {
+            $vertexesData = $getLumpData(4);
+            if ($vertexesData !== null) {
+                $mapData['vertexes'] = Vertexes::parse($vertexesData);
+            }
         }
 
         // SECTORS lump: index + 7 (skip 5,6: SEGS and SSECTORS)
-        $sectorsData = $getLumpData(7);
-        if ($sectorsData !== null) {
-            $mapData['sectors'] = Sectors::parse($sectorsData);
+        if ($settings['maps']['sectors'] ?? false) {
+            $sectorsData = $getLumpData(7);
+            if ($sectorsData !== null) {
+                $mapData['sectors'] = Sectors::parse($sectorsData);
+            }
         }
 
         return $mapData;
