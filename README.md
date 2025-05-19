@@ -45,12 +45,18 @@ Calling `$analyser->analyse()` returns a deeply structured array that breaks dow
 ```php
 [
     'type' => 'PWAD' | 'IWAD',
-    'global' => [
-        'complevel'    => 21
-        'has_playpal'  => true | false,
-        'has_colormap' => true | false,
-        'playpal'      => [...],    // Present only if has_playpal is true
-        'colormap'     => [...],   // Present only if has_colormap is true
+    'complevel'    => 21
+    'has_playpal'  => true | false,
+    'has_colormap' => true | false,
+    'playpal'      => [...],    // Present only if has_playpal is true
+    'colormap'     => [...],   // Present only if has_colormap is true
+    'counts'   => [
+        'maps'     => 32,
+        'things'   => 1234,
+        'linedefs' => 1234,
+        'sidedefs' => 1234,
+        'vertexes' => 1234,
+        'sectors'  => 1234,
     ],
     'maps' => [
         'MAP01' => [
@@ -59,6 +65,13 @@ Calling `$analyser->analyse()` returns a deeply structured array that breaks dow
             'sidedefs' => [...],
             'vertexes' => [...],
             'sectors'  => [...],
+            'counts'   => [
+                'things'   => 1234,
+                'linedefs' => 1234,
+                'sidedefs' => 1234,
+                'vertexes' => 1234,
+                'sectors'  => 1234,
+            ],
         ],
         ...
     ]

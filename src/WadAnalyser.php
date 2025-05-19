@@ -24,11 +24,10 @@ class WadAnalyser
     {
         $this->wadFile = new WadFile($path);
 
-        $result = [
-            'type' => $this->wadFile->getType(),
-            'global' => $this->analyseGlobal(),
-            'maps' => $this->analyseMaps(),
-        ];
+        $result = $this->analyseGlobal();
+        $result['type']   = $this->wadFile->getType();
+        $result['maps']   = $this->analyseMaps();
+        $result['counts'] = $this->sumCountsFromMaps($result['maps']);
 
         return $result;
     }
@@ -113,14 +112,11 @@ class WadAnalyser
             return null;
         };
 
-        if ($this->settings['maps']['counts'] ?? false)
-        {
-            $mapData['counts']['things']   = intdiv(strlen($getLumpData(1)), 10);
-            $mapData['counts']['linedefs'] = intdiv(strlen($getLumpData(2)), 14);
-            $mapData['counts']['sidedefs'] = intdiv(strlen($getLumpData(3)), 30);
-            $mapData['counts']['vertexes'] = intdiv(strlen($getLumpData(4)), 4);
-            $mapData['counts']['sectors']  = intdiv(strlen($getLumpData(8)), 26);
-        }
+        $mapData['counts']['things']   = intdiv(strlen($getLumpData(1)), 10);
+        $mapData['counts']['linedefs'] = intdiv(strlen($getLumpData(2)), 14);
+        $mapData['counts']['sidedefs'] = intdiv(strlen($getLumpData(3)), 30);
+        $mapData['counts']['vertexes'] = intdiv(strlen($getLumpData(4)), 4);
+        $mapData['counts']['sectors']  = intdiv(strlen($getLumpData(8)), 26);
 
         // THINGS lump: index + 1
         if ($this->settings['maps']['things'] ?? false)
@@ -185,5 +181,27 @@ class WadAnalyser
             'mbf21' => 21,
             default => null,
         };
+    }
+
+    protected function sumCountsFromMaps(array $maps): array
+    {
+        $totals = [
+            'maps' => count($maps),
+            'things' => 0,
+            'linedefs' => 0,
+            'sidedefs' => 0,
+            'vertexes' => 0,
+            'sectors' => 0,
+        ];
+
+        foreach ($maps as $map) {
+            $totals['things']     += $map['counts']['things']     ?? 0;
+            $totals['linedefs']   += $map['counts']['linedefs']   ?? 0;
+            $totals['sidedefs']   += $map['counts']['sidedefs']   ?? 0;
+            $totals['vertexes']    += $map['counts']['vertexes']    ?? 0;
+            $totals['sectors']    += $map['counts']['sectors']    ?? 0;
+        }
+
+        return $totals;
     }
 }

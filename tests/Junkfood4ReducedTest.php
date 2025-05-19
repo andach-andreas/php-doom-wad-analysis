@@ -40,10 +40,10 @@ class Junkfood4ReducedTest extends TestCase
         ]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
-        $this->assertTrue($result['global']['has_colormap']);
-        $this->assertCount(34, $result['global']['colormap']);
+        $this->assertTrue($result['has_colormap']);
+        $this->assertCount(34, $result['colormap']);
 
-        foreach ($result['global']['colormap'] as $level) {
+        foreach ($result['colormap'] as $level) {
             $this->assertCount(256, $level);
         }
     }
@@ -63,15 +63,15 @@ class Junkfood4ReducedTest extends TestCase
         ]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
-        $this->assertTrue($result['global']['has_playpal']);
-        $this->assertCount(14, $result['global']['playpal']);
+        $this->assertTrue($result['has_playpal']);
+        $this->assertCount(14, $result['playpal']);
 
-        foreach ($result['global']['playpal'] as $palette) {
+        foreach ($result['playpal'] as $palette) {
             $this->assertCount(256, $palette);
         }
 
-        $this->assertEquals(['r' => 0, 'g' => 0, 'b' => 0], $result['global']['playpal'][0][0]);
-        $this->assertEquals(['r' => 26, 'g' => 19, 'b' => 9], $result['global']['playpal'][0][1]);
+        $this->assertEquals(['r' => 0, 'g' => 0, 'b' => 0], $result['playpal'][0][0]);
+        $this->assertEquals(['r' => 26, 'g' => 19, 'b' => 9], $result['playpal'][0][1]);
     }
 
     public function testCountsInWad()
@@ -88,6 +88,13 @@ class Junkfood4ReducedTest extends TestCase
         $this->assertEquals(4410, $result['maps']['MAP01']['counts']['sidedefs']);
         $this->assertEquals(2336, $result['maps']['MAP01']['counts']['vertexes']);
         $this->assertEquals(259, $result['maps']['MAP01']['counts']['sectors']);
+
+        $this->assertEquals(1, $result['counts']['maps']);
+        $this->assertEquals(227, $result['counts']['things']);
+        $this->assertEquals(2269, $result['counts']['linedefs']);
+        $this->assertEquals(4410, $result['counts']['sidedefs']);
+        $this->assertEquals(2336, $result['counts']['vertexes']);
+        $this->assertEquals(259, $result['counts']['sectors']);
     }
 
     public function testComplevelInWad()
@@ -95,6 +102,6 @@ class Junkfood4ReducedTest extends TestCase
         $analyser = new WadAnalyser([]);
         $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
 
-        $this->assertEquals(21, $result['global']['complevel']);
+        $this->assertEquals(21, $result['complevel']);
     }
 }
