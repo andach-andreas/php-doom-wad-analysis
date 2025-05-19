@@ -70,6 +70,11 @@ class WadFile
 
     protected function readBytes(int $offset, int $size): string
     {
+        if (!$size)
+        {
+            return '';
+        }
+
         $handle = fopen($this->path, 'rb');
         fseek($handle, $offset);
         $data = fread($handle, $size);

@@ -14,7 +14,7 @@ class TextFile
         }
 
         $this->path = $path;
-        $this->text = file_get_contents($path);
+        $this->text = $this->convertToUtf8(file_get_contents($path));
     }
 
     function parse(): array
@@ -25,7 +25,6 @@ class TextFile
             'advanced_engine_needed' => '',
             'primary_purpose' => '',
             'title' => '',
-            'filename' => '',
             'release_date' => '',
             'author' => '',
             'email_address' => '',
@@ -64,7 +63,6 @@ class TextFile
             'advanced_engine_needed' => '/^Advanced engine needed\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
             'primary_purpose' => '/^Primary purpose\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
             'title' => '/^Title\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
-            'filename' => '/^Filename\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
             'release_date' => '/^Release date\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
             'author' => '/^Author\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
             'email_address' => '/^Email Address\s*:\s*((?:.*\n)+?)(?=^\S|\Z)/mi',
@@ -112,4 +110,29 @@ class TextFile
         $lines = array_map(fn($line) => ltrim($line), $lines);
         return trim(implode("\n", $lines));
     }
+
+    private function convertToUtf8(string $text): string
+    {
+        // Common fallback encodings, in priority order
+        $encodings = [
+            'UTF-8',
+            'Windows-1252',
+            'ISO-8859-1',
+            'ISO-8859-15',
+            'ASCII',
+            'CP850',
+            'CP437', // used directly in iconv, not in mb_detect_encoding
+        ];
+
+        foreach ($encodings as $enc) {
+            $converted = @iconv($enc, 'UTF-8//IGNORE', $text);
+            if ($converted && !empty(trim($converted))) {
+                return $converted;
+            }
+        }
+
+        // Fallback: strip invalid characters
+        return mb_convert_encoding($text, 'UTF-8', 'auto');
+    }
+
 }

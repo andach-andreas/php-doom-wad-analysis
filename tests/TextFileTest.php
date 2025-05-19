@@ -16,7 +16,6 @@ class TextFileTest extends TestCase
             'advanced_engine_needed' => 'DSDA-Doom v24+',
             'primary_purpose'        => 'Single play',
             'title'                  => 'Test Wad Title',
-            'filename'               => 'test-wad.wad',
             'release_date'           => '01/01/2000',
             'author'                 => 'John Smith',
             'email_address'          => 'john@smith.com',
