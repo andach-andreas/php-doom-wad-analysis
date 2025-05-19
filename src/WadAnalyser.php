@@ -55,7 +55,7 @@ class WadAnalyser
             }
         }
 
-        // TODO: Detect custom enemies and weapons by scanning lumps or things
+        $globals['complevel'] = $this->detectComplevelFromLump();
 
         return $globals;
     }
@@ -166,5 +166,24 @@ class WadAnalyser
         }
 
         return $mapData;
+    }
+
+    protected function detectComplevelFromLump(): ?int
+    {
+        $data = $this->wadFile->getLumpData('COMPLVL');
+
+        if (!$data) {
+            return null;
+        }
+
+        $value = strtolower(trim($data));
+
+        return match ($value) {
+            'vanilla' => 2, // or 3/4 depending on IWAD, but use 2 as baseline
+            'boom' => 9,
+            'mbf' => 11,
+            'mbf21' => 21,
+            default => null,
+        };
     }
 }

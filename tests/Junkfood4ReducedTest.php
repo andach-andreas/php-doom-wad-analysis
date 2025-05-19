@@ -89,4 +89,12 @@ class Junkfood4ReducedTest extends TestCase
         $this->assertEquals(2336, $result['maps']['MAP01']['counts']['vertexes']);
         $this->assertEquals(259, $result['maps']['MAP01']['counts']['sectors']);
     }
+
+    public function testComplevelInWad()
+    {
+        $analyser = new WadAnalyser([]);
+        $result = $analyser->analyse(__DIR__ . '/wads/Junkfood4Reduced.wad');
+
+        $this->assertEquals(21, $result['global']['complevel']);
+    }
 }
