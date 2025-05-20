@@ -12,6 +12,7 @@ use Andach\DoomWadAnalysis\Lumps\Map\Things;
 
 class WadAnalyser
 {
+    protected string $path = '';
     public array $mapNames = [];
     protected array $settings = [];
     protected WadFile $wadFile;
@@ -23,6 +24,7 @@ class WadAnalyser
 
     public function analyse(string $path): array
     {
+        $this->path = $path;
         $this->wadFile = new WadFile($path);
         $this->mapNames = $this->parseMapNames();
 
@@ -30,6 +32,14 @@ class WadAnalyser
         $result['type']   = $this->wadFile->getType();
         $result['maps']   = $this->analyseMaps();
         $result['counts'] = $this->sumCountsFromMaps($result['maps']);
+
+        if ($this->settings['maps']['images'] ?? false)
+        {
+            foreach ($result['maps'] as $mapID => $map)
+            {
+                $result['maps'][$mapID]['image'] = $this->renderMapImage($map);
+            }
+        }
 
         return $result;
     }
@@ -130,7 +140,7 @@ class WadAnalyser
         }
 
         // LINEDEFS lump: index + 2
-        if ($this->settings['maps']['linedefs'] ?? false)
+        if (($this->settings['maps']['linedefs'] ?? false) || ($this->settings['maps']['images'] ?? false))
         {
             $linedefsData = $getLumpData(2);
             if ($linedefsData !== null) {
@@ -148,7 +158,8 @@ class WadAnalyser
         }
 
         // VERTEXES lump: index + 4
-        if ($this->settings['maps']['vertexes'] ?? false) {
+        if (($this->settings['maps']['vertexes'] ?? false) || ($this->settings['maps']['images'] ?? false))
+        {
             $vertexesData = $getLumpData(4);
             if ($vertexesData !== null) {
                 $mapData['vertexes'] = Vertexes::parse($vertexesData);
@@ -275,6 +286,59 @@ class WadAnalyser
         }
 
         return $mapNames;
+    }
+
+    protected function renderMapImage(array $mapData)
+    {
+        if (empty($mapData['vertexes']) || empty($mapData['linedefs'])) {
+            return;
+        }
+
+        $vertexes = $mapData['vertexes'];
+        $linedefs = $mapData['linedefs'];
+
+        // Normalize coordinates
+        $minX = $minY = INF;
+        $maxX = $maxY = -INF;
+        foreach ($vertexes as $v) {
+            $minX = min($minX, $v['x']);
+            $minY = min($minY, $v['y']);
+            $maxX = max($maxX, $v['x']);
+            $maxY = max($maxY, $v['y']);
+        }
+
+        $scale = 2; // pixels per unit
+        $padding = 10;
+
+        $width = (int)(($maxX - $minX) * $scale + $padding * 2);
+        $height = (int)(($maxY - $minY) * $scale + $padding * 2);
+
+        $im = imagecreatetruecolor($width, $height);
+        $bg = imagecolorallocate($im, 0, 0, 0);
+        $lineColor = imagecolorallocate($im, 255, 255, 255);
+        imagefill($im, 0, 0, $bg);
+
+        // Draw linedefs
+        foreach ($linedefs as $line) {
+            $v1 = $vertexes[$line['start_vertex']];
+            $v2 = $vertexes[$line['end_vertex']];
+
+            $x1 = ($v1['x'] - $minX) * $scale + $padding;
+            $y1 = $height - (($v1['y'] - $minY) * $scale + $padding);
+            $x2 = ($v2['x'] - $minX) * $scale + $padding;
+            $y2 = $height - (($v2['y'] - $minY) * $scale + $padding);
+
+            imageline($im, $x1, $y1, $x2, $y2, $lineColor);
+        }
+
+        // Output to buffer
+        ob_start();
+        imagepng($im);
+        $imageData = ob_get_clean();
+
+        imagedestroy($im);
+
+        return $imageData;
     }
 
 
