@@ -12,6 +12,7 @@ use Andach\DoomWadAnalysis\Lumps\Map\Things;
 
 class WadAnalyser
 {
+    public array $mapNames = [];
     protected array $settings = [];
     protected WadFile $wadFile;
 
@@ -23,6 +24,7 @@ class WadAnalyser
     public function analyse(string $path): array
     {
         $this->wadFile = new WadFile($path);
+        $this->mapNames = $this->parseMapNames();
 
         $result = $this->analyseGlobal();
         $result['type']   = $this->wadFile->getType();
@@ -101,7 +103,7 @@ class WadAnalyser
             return [];
         }
 
-        $mapData = [];
+        $mapData = ['name' => $this->getMapNameFromID($mapName)];
 
         // Helper to get lump data by relative index
         $getLumpData = function(int $offset) use ($lumps, $index) {
@@ -182,6 +184,99 @@ class WadAnalyser
             default => null,
         };
     }
+
+    public function getMapNameFromID(string $id): string
+    {
+        return $this->mapNames[$id] ?? '';
+    }
+
+    function parseMapNames()
+    {
+        $umapinfo = $this->parseMapNamesFromUmapinfo();    // highest priority
+        $mapinfo  = $this->parseMapNamesFromMapinfo();     // medium priority
+        $dehacked = $this->parseMapNamesFromDehacked();    // lowest priority
+
+        $return = array_merge(
+            $umapinfo,
+            array_diff_key($mapinfo, $umapinfo),
+            array_diff_key($dehacked, $umapinfo + $mapinfo)
+        );
+
+        if ($return)
+        {
+            return $return;
+        }
+
+        return [];
+    }
+
+    function parseMapNamesFromDehacked(): array
+    {
+        $mapNames = [];
+
+        foreach (['DEHACKED', 'DEH'] as $lumpName) {
+            $deh = $this->wadFile->getLumpData($lumpName);
+            if ($deh)
+            {
+                if (preg_match_all('/^\s*LEVEL\s+NAME\s*:\s*(MAP\d\d|E\dM\d)/mi', $deh, $matches)) {
+                    foreach ($matches[1] as $name) {
+                        $mapNames[] = strtoupper($name);
+                    }
+                }
+            }
+        }
+
+        return array_unique($mapNames);
+    }
+
+    function parseMapNamesFromMapinfo(): array
+    {
+        $mapinfo = $this->wadFile->getLumpData('MAPINFO');
+        if (!$mapinfo) {
+            return [];
+        }
+        $lines = preg_split('/\R/', $mapinfo);
+        $mapNames = [];
+
+        foreach ($lines as $line) {
+            if (preg_match('/^\s*map\s+(\S+)\s*,/i', $line, $match)) {
+                $mapNames[] = strtoupper($match[1]);
+            }
+        }
+
+        return array_unique($mapNames);
+    }
+
+    function parseMapNamesFromUmapinfo(): array
+    {
+        $umapinfo = $this->wadFile->getLumpData('UMAPINFO');
+        if (!$umapinfo) {
+            return [];
+        }
+
+        $lines = preg_split('/\R/', $umapinfo);
+        $mapNames = [];
+
+        $currentMap = null;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if (preg_match('/^MAP\s+(\S+)/i', $line, $match)) {
+                $currentMap = strtoupper($match[1]);
+                continue;
+            }
+
+            if ($currentMap && preg_match('/^levelname\s*=\s*"([^"]+)"/i', $line, $match)) {
+                $mapNames[$currentMap] = $match[1];
+                // only reset after assignment
+                $currentMap = null;
+            }
+        }
+
+        return $mapNames;
+    }
+
 
     protected function sumCountsFromMaps(array $maps): array
     {

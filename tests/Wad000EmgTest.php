@@ -7,17 +7,7 @@ class Wad000EmgTest extends TestCase
 {
     public function testMapCountInWad()
     {
-        $analyser = new WadAnalyser([
-            'colormap' => true,
-            'playpal'  => true,
-            'maps' => [
-                'things'   => true,
-                'linedefs' => true,
-                'sidedefs' => true,
-                'vertexes' => true,
-                'textures' => true,
-            ],
-        ]);
+        $analyser = new WadAnalyser([]);
         $result = $analyser->analyse(__DIR__ . '/wads/000emg.wad');
 
         $this->assertArrayHasKey('maps', $result);
