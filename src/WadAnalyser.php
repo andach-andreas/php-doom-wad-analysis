@@ -119,7 +119,7 @@ class WadAnalyser
         $getLumpData = function(int $offset) use ($lumps, $index) {
             $pos = $index + $offset;
             if (isset($lumps[$pos])) {
-                return $this->wadFile->getLumpData($lumps[$pos]['name']);
+                return $this->wadFile->getLumpDataFromID($pos);
             }
             return null;
         };

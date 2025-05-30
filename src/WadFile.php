@@ -68,6 +68,13 @@ class WadFile
         return null;
     }
 
+    public function getLumpDataFromID(int $id): ?string
+    {
+        $lump = $this->lumps[$id];
+
+        return $this->readBytes($lump['offset'], $lump['size']);
+    }
+
     protected function readBytes(int $offset, int $size): string
     {
         if (!$size)
