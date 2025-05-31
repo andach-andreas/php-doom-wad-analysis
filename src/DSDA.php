@@ -60,15 +60,15 @@ class DSDA
             $recordID = $this->extractDemoId($tds[($countTds - 2)]);
 
             $records[$recordID] = [
-                'level' => $levelName,
+                'level' => str_replace(' ', '', strtoupper($levelName)),
                 'category' => $categoryName,
                 'player' => $this->cleanTdContent($tds[($countTds - 5)]),
                 'engine' => $this->cleanTdContent($tds[($countTds - 4)]),
                 'note' => $this->extractNote($tds[($countTds - 3)]),
                 'time' => $this->cleanTdContent($tds[($countTds - 2)]),
-                'lmpURL' => $this->extractWadURL($tds[($countTds - 2)]),
-                'youtubeID' => $this->extractYoutubeId($tds[($countTds - 1)]),
-                'youtubeLink' => $this->extractYoutubeLink($tds[($countTds - 1)]),
+                'lmp_url_zip' => $this->extractWadURL($tds[($countTds - 2)]),
+                'youtube_id' => $this->extractYoutubeId($tds[($countTds - 1)]),
+                'youtube_link' => $this->extractYoutubeLink($tds[($countTds - 1)]),
             ];
 
             $count++;

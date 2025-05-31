@@ -10,7 +10,5 @@ class DemoTest extends TestCase
     public function testDemo()
     {
         $demo = new Demo(__DIR__ . '/demos/junk67m1134.lmp');
-        print_r($demo->lmpstats());
-        print_r($demo->tics);
     }
 }
