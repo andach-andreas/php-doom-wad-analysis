@@ -19,6 +19,7 @@ class Demo
 
     protected string $data = '';
     public array $tics = [];
+    public string $ticsCSV = '';
 
     public function __construct(string $filePath)
     {
@@ -533,4 +534,34 @@ class Demo
                 echo "\n";
         }
     }
+
+    public function convertTicsToCsv()
+    {
+        if (empty($this->tics) || !is_array($this->tics)) {
+            $this->ticsCSV = '';
+            return;
+        }
+
+        // Define CSV headers
+        $headers = ['index', 'forward', 'strafe', 'turn', 'fire', 'use', 'weapon', 'special'];
+        $csv = implode(',', $headers) . "\n";
+
+        // Append each tic line
+        foreach ($this->tics as $index => $tic) {
+            $row = [
+                $index,
+                $tic['forward'] ?? '',
+                $tic['strafe'] ?? '',
+                $tic['turn'] ?? '',
+                $tic['fire'] ?? '',
+                $tic['use'] ?? '',
+                $tic['weapon'] ?? '',
+                $tic['special'] ?? ''
+            ];
+            $csv .= implode(',', $row) . "\n";
+        }
+
+        $this->ticsCSV = $csv;
+    }
+
 }

@@ -10,5 +10,9 @@ class DemoTest extends TestCase
     public function testDemo()
     {
         $demo = new Demo(__DIR__ . '/demos/junk67m1134.lmp');
+        $demo->lmpStats();
+        $demo->convertTicsToCsv();
+        print_r('a'.$demo->ticsCSV);
+        die();
     }
 }
