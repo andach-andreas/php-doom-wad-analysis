@@ -22,9 +22,11 @@ class DemoTest extends TestCase
                 'nomonsters' => 0,
                 'number_of_players' => 1,
                 'tics' => 24551,
-                'secs' => 41.46,
+                'seconds' => 41.46,
             ],
             $demo->stats
         );
+
+        print_r($demo->tics[1]);
     }
 }
