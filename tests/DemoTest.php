@@ -11,8 +11,20 @@ class DemoTest extends TestCase
     {
         $demo = new Demo(__DIR__ . '/demos/junk67m1134.lmp');
         $demo->lmpStats();
-        $demo->convertTicsToCsv();
-        print_r('a'.$demo->ticsCSV);
-        die();
+
+        $this->assertSame(
+            [
+                'version' => 202,
+                'skill_number' => 4,
+                'mode_number' => 0,
+                'respawn' => 0,
+                'fast' => 0,
+                'nomonsters' => 0,
+                'number_of_players' => 1,
+                'tics' => 24551,
+                'secs' => 41.46,
+            ],
+            $demo->stats
+        );
     }
 }

@@ -18,6 +18,7 @@ class Demo
     public int $ticCount = 0;
 
     protected string $data = '';
+    public array $stats;
     public array $tics = [];
     public string $ticsCSV = '';
 
@@ -486,6 +487,18 @@ class Demo
         $tsec = round($tics / $ticrat, 2);
         $mins = intval($tsec / 60);
         $secs = round($tsec - $mins * 60, 2);
+
+        $this->stats = [
+            'version' => $vers,
+            'skill_number' => $skll,
+            'mode_number' => $mode,
+            'respawn' => $resp,
+            'fast' => $fast,
+            'nomonsters' => $nomo,
+            'number_of_players' => $plys,
+            'tics' => $tics,
+            'secs' => $secs,
+        ];
 
         return array(
             'vers' => $vers,
