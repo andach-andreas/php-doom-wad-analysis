@@ -497,7 +497,7 @@ class Demo
             'nomonsters' => $nomo,
             'number_of_players' => $plys,
             'tics' => $tics,
-            'secs' => $secs,
+            'seconds' => $secs,
         ];
 
         return array(
